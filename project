@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IUB Mart | Campus Peer-to-Peer Marketplace</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            iub: {
+              navy: '#0B2545',
+              blue: '#134074',
+              royal: '#1D4ED8',
+              teal: '#0D9488',
+              emerald: '#10B981',
+              surface: '#F8FAFC',
+            }
+          },
+          boxShadow: {
+            'card': '0 4px 20px -2px rgba(11, 37, 69, 0.06), 0 2px 6px -1px rgba(11, 37, 69, 0.04)',
+            'card-hover': '0 14px 30px -5px rgba(11, 37, 69, 0.12), 0 6px 12px -4px rgba(13, 148, 136, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom scrollbar & smooth transitions */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    @keyframes heartPop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.35); }
+      100% { transform: scale(1); }
+    }
+    .animate-heart {
+      animation: heartPop 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    .drawer-enter {
+      animation: slideInRight 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-enter {
+      animation: modalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-teal-100 selection:text-teal-900">
+
+  <!-- Top Academic Campus Banner -->
+  <div class="bg-[#0B2545] text-slate-200 text-xs py-1.5 px-4 border-b border-white/10">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
+          Bashundhara R/A Campus
+        </span>
+        <span class="hidden sm:inline text-slate-300">Exclusive Peer-to-Peer Exchange for Independent University, Bangladesh Students</span>
+      </div>
+      <div class="flex items-center gap-4 text-slate-300">
+        <span class="inline-flex items-center gap-1">
+          <!-- Shield Check SVG -->
+          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+          </svg>
+          @iub.edu.bd Verified Peers
+        </span>
+        <button onclick="resetDemoData()" class="hover:text-white underline decoration-slate-500 underline-offset-2 transition" title="Restore original catalog items">
+          Reset Demo Data
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Main Navbar -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-18 gap-3 sm:gap-6">
+        
+        <!-- Brand Logo -->
+        <a href="#" onclick="resetAllFilters(event)" class="flex items-center gap-2.5 shrink-0 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0B2545] via-[#134074] to-teal-600 flex items-center justify-center text-white shadow-md group-hover:shadow-teal-500/25 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-lg sm:text-xl font-extrabold tracking-tight text-[#0B2545]">IUB <span class="text-teal-600">Mart</span></span>
+              <span class="hidden md:inline-block text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-50 text-[#134074] border border-blue-100">Campus</span>
+            </div>
+            <p class="hidden sm:block text-[11px] text-slate-500 leading-none">Buy • Sell • Rent at IUB</p>
+          </div>
+        </a>
+
+        <!-- Desktop Search Input -->
+        <div class="hidden md:flex flex-1 max-w-xl relative">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z"/>
+            </svg>
+          </div>
+          <input
+            type="text"
+            id="desktopSearchInput"
+            oninput="handleSearchInput(this.value)"
+            placeholder="Search textbooks, CSE203, Casio 991EX, Arduino, lab coat..."
+            class="w-full pl-10 pr-9 py-2.5 bg-slate-100/90 hover:bg-slate-100 focus:bg-white text-sm text-slate-800 placeholder-slate-400 rounded-xl border border-transparent focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition"
+          />
+          <button
+            id="clearSearchBtnDesktop"
+            onclick="clearSearch()"
+            class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+            title="Clear search"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Action Buttons: Wishlist & Post Item -->
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+          <!-- Wishlist Drawer Trigger -->
+          <button
+            onclick="toggleWishlistDrawer(true)"
+            class="relative inline-flex items-center gap-2 px-3 sm:px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-semibold text-sm transition active:scale-95"
+            aria-label="Open Wishlist"
+          >
+            <svg class="w-5 h-5 text-rose-500 fill-rose-500/15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+            <span class="hidden sm:inline">Wishlist</span>
+            <span
+              id="wishlistBadge"
+              class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold rounded-full bg-rose-500 text-white shadow-xs"
+            >0</span>
+          </button>
+
+          <!-- Post an Item Trigger -->
+          <button
+            onclick="openPostModal()"
+            class="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0B2545] to-[#134074] hover:from-[#134074] hover:to-teal-700 text-white font-semibold text-sm shadow-sm hover:shadow-md transition active:scale-95"
+          >
+            <svg class="w-4 h-4 text-teal-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>Post Item</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Search Bar -->
+      <div class="pb-3 md:hidden">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z"/>
+            </svg>
+          </div>
+          <input
+            type="text"
+            id="mobileSearchInput"
+            oninput="handleSearchInput(this.value)"
+            placeholder="Search textbooks, course codes, calculators, kits..."
+            class="w-full pl-10 pr-9 py-2.5 bg-slate-100 focus:bg-white text-sm text-slate-800 placeholder-slate-400 rounded-xl border border-transparent focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition"
+          />
+          <button
+            id="clearSearchBtnMobile"
+            onclick="clearSearch()"
+            class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="bg-gradient-to-br from-[#0B2545] via-[#134074] to-[#0F4C5C] text-white relative overflow-hidden">
+    <!-- Subtle Geometric Pattern Overlay -->
+    <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 22px 22px;"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-10 relative z-10">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div class="max-w-2xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-teal-200 text-xs font-semibold mb-3">
+            <span>🎓 Independent University, Bangladesh</span>
+            <span>•</span>
+            <span>Zero Delivery Fees</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+            Pass Along Books &amp; Lab Gear <span class="text-teal-300">Right on Campus.</span>
+          </h1>
+          <p class="mt-2.5 text-sm sm:text-base text-slate-200/90 leading-relaxed max-w-xl">
+            Buy, sell, or rent semester textbooks, scientific calculators, Arduino kits, and lab coats directly with fellow IUBians at Library Courtyard, Food Court, or Main Gate.
+          </p>
+        </div>
+
+        <!-- Quick Campus Stats / Meetup Spots -->
+        <div class="grid grid-cols-3 gap-2.5 sm:gap-4 shrink-0">
+          <div class="bg-white/10 backdrop-blur-xs border border-white/15 rounded-2xl p-3.5 sm:p-4 text-center">
+            <div id="statTotalItems" class="text-xl sm:text-2xl font-extrabold text-white">14</div>
+            <div class="text-[11px] sm:text-xs text-teal-200 font-medium mt-0.5">Active Listings</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-xs border border-white/15 rounded-2xl p-3.5 sm:p-4 text-center">
+            <div class="text-xl sm:text-2xl font-extrabold text-emerald-300">৳0</div>
+            <div class="text-[11px] sm:text-xs text-teal-200 font-medium mt-0.5">Campus Pickup</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-xs border border-white/15 rounded-2xl p-3.5 sm:p-4 text-center">
+            <div class="text-xl sm:text-2xl font-extrabold text-amber-300">6 Spots</div>
+            <div class="text-[11px] sm:text-xs text-teal-200 font-medium mt-0.5">Safe Meetups</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+    <!-- Category Pills Bar -->
+    <div class="flex items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div id="categoryTabs" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+    <!-- Secondary Filter & Sort Toolbar -->
+    <div class="mt-4 bg-white rounded-2xl border border-slate-200/90 p-3.5 sm:p-4 shadow-xs">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        
+        <!-- Left Filters: Listing Type & Condition Pills -->
+        <div class="flex flex-wrap items-center gap-3 sm:gap-5">
+          <!-- Listing Type Segmented Filter -->
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-1">Type:</span>
+            <div class="inline-flex rounded-xl bg-slate-100 p-1" id="listingTypeFilters">
+              <button onclick="setListingTypeFilter('All')" data-type="All" class="type-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-white text-[#0B2545] shadow-xs">All Types</button>
+              <button onclick="setListingTypeFilter('Buy')" data-type="Buy" class="type-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900">For Sale</button>
+              <button onclick="setListingTypeFilter('Rent')" data-type="Rent" class="type-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900">For Rent</button>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="hidden sm:block h-6 w-px bg-slate-200"></div>
+
+          <!-- Condition Filter Checkboxes/Pills -->
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-1">Condition:</span>
+            <div id="conditionFilters" class="flex flex-wrap items-center gap-1.5">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Controls: Results Count & Sort Dropdown -->
+        <div class="flex items-center justify-between sm:justify-end gap-3 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+          <span id="resultsCountLabel" class="text-xs sm:text-sm font-medium text-slate-500">
+            Showing <strong class="text-slate-800">14</strong> items
+          </span>
+
+          <div class="flex items-center gap-2">
+            <label for="sortSelect" class="text-xs font-semibold text-slate-500 hidden sm:inline">Sort:</label>
+            <select
+              id="sortSelect"
+              onchange="setSortOrder(this.value)"
+              class="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs sm:text-sm font-medium rounded-xl px-3 py-2 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 cursor-pointer transition"
+            >
+              <option value="newest">Newest First</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Filter Chips Summary (shown when filters are applied) -->
+      <div id="activeFilterSummary" class="hidden mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+        <div id="activeFilterChips" class="flex flex-wrap items-center gap-1.5 text-xs"></div>
+        <button onclick="resetAllFilters()" class="text-xs font-semibold text-teal-700 hover:text-teal-800 underline underline-offset-2">
+          Clear all filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div id="productGrid" class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      <!-- Cards injected dynamically by JS -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden my-12 bg-white rounded-3xl border border-slate-200/80 p-10 text-center max-w-lg mx-auto shadow-xs">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center text-3xl mb-4">
+        🔍
+      </div>
+      <h3 class="text-lg font-bold text-slate-800">No campus listings matched</h3>
+      <p class="mt-1.5 text-sm text-slate-500">
+        Try clearing some filters, searching a different course code (like <span class="font-semibold text-slate-700">CSE203</span> or <span class="font-semibold text-slate-700">MAT104</span>), or post a request!
+      </p>
+      <button
+        onclick="resetAllFilters()"
+        class="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0B2545] hover:bg-[#134074] text-white text-sm font-semibold transition"
+      >
+        Reset All Filters
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Campus Footer -->
+  <footer class="mt-16 bg-white border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-[#0B2545] text-sm">IUB Mart</span>
+        <span>•</span>
+        <span>Plot 16, Block B, Aftabuddin Ahmed Road, Bashundhara R/A, Dhaka</span>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <span>Safe Campus Zones: Main Gate • Library Courtyard • Food Court • Lab Lobby</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- WISHLIST SLIDE-OVER DRAWER                                            -->
+  <!-- ===================================================================== -->
+  <div id="wishlistBackdrop" class="fixed inset-0 z-50 hidden">
+    <!-- Dimmed overlay -->
+    <div onclick="toggleWishlistDrawer(false)" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"></div>
+    
+    <!-- Drawer panel -->
+    <aside class="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl flex flex-col z-10 drawer-enter">
+      <!-- Drawer Header -->
+      <div class="px-5 py-4 bg-[#0B2545] text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-400/30 flex items-center justify-center text-rose-400">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-base font-bold leading-tight">Saved Wishlist</h2>
+            <p id="drawerCountSubtitle" class="text-xs text-slate-300">0 items saved in browser</p>
+          </div>
+        </div>
+        <button
+          onclick="toggleWishlistDrawer(false)"
+          class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition"
+          aria-label="Close Wishlist"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Saved Items List -->
+      <div id="wishlistItemsContainer" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
+        <!-- Populated dynamically -->
+      </div>
+
+      <!-- Drawer Footer with Estimated Cost & Clear -->
+      <div id="wishlistFooter" class="p-4 bg-white border-t border-slate-200 space-y-3">
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-slate-500 font-medium">Estimated Total (Buy + 1st Rent Term):</span>
+          <span id="wishlistTotalCost" class="text-lg font-extrabold text-[#0B2545]">৳0</span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <button
+            onclick="clearWishlist()"
+            class="w-full py-2.5 px-4 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-sm transition"
+          >
+            Clear Wishlist
+          </button>
+          <button
+            onclick="toggleWishlistDrawer(false)"
+            class="w-full py-2.5 px-4 rounded-xl bg-[#0B2545] hover:bg-[#134074] text-white font-semibold text-sm transition"
+          >
+            Continue Browsing
+          </button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- ITEM DETAILS & CONTACT SELLER MODAL                                   -->
+  <!-- ===================================================================== -->
+  <div id="detailModalBackdrop" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div onclick="closeDetailModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
+    <div class="min-h-full flex items-center justify-center p-4 relative z-10">
+      <div id="detailModalContent" class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden modal-enter">
+        <!-- Populated dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- POST AN ITEM MODAL                                                    -->
+  <!-- ===================================================================== -->
+  <div id="postModalBackdrop" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div onclick="closePostModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
+    <div class="min-h-full flex items-center justify-center p-4 relative z-10">
+      <div class="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden modal-enter">
+        
+        <!-- Modal Header -->
+        <div class="px-6 py-4 bg-gradient-to-r from-[#0B2545] to-[#134074] text-white flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-bold">Post an Item to IUB Mart</h2>
+            <p class="text-xs text-teal-200">List used books, electronics, or lab kits for fellow IUBians</p>
+          </div>
+          <button onclick="closePostModal()" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Form -->
+        <form id="postItemForm" onsubmit="handleCreateListing(event)" class="p-6 space-y-4 max-h-[82vh] overflow-y-auto">
+          
+          <!-- Title & Course Code -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Item Title *</label>
+              <input
+                type="text"
+                id="postTitle"
+                required
+                placeholder="e.g., Discrete Mathematics 8th Ed (Rosen)"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Course Code</label>
+              <input
+                type="text"
+                id="postCourseCode"
+                placeholder="e.g., CSE203"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm uppercase focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+              />
+            </div>
+          </div>
+
+          <!-- Category & Condition -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Category *</label>
+              <select
+                id="postCategory"
+                required
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+              >
+                <option value="Textbooks">Textbooks</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Lab Kits">Lab Kits</option>
+                <option value="Calculators & Gear">Calculators &amp; Gear</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Condition *</label>
+              <select
+                id="postCondition"
+                required
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+              >
+                <option value="Like New">Like New</option>
+                <option value="Good" selected>Good</option>
+                <option value="Fair">Fair</option>
+                <option value="Heavily Used">Heavily Used</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Listing Type, Price & Rental Period -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Listing Type *</label>
+              <select
+                id="postListingType"
+                onchange="toggleRentPeriodField(this.value)"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+              >
+                <option value="Buy">For Sale (Buy)</option>
+                <option value="Rent">For Rent</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Price (BDT ৳) *</label>
+              <input
+                type="number"
+                id="postPrice"
+                required
+                min="20"
+                step="10"
+                placeholder="e.g., 450"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+              />
+            </div>
+            <div id="rentPeriodWrapper" class="hidden">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Rent Period *</label>
+              <select
+                id="postRentPeriod"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+              >
+                <option value="/ semester">Per Semester</option>
+                <option value="/ month">Per Month</option>
+                <option value="/ week">Per Week</option>
+              </select>
+            </div>
+            <div id="negotiableWrapper" class="flex items-end pb-2">
+              <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                <input type="checkbox" id="postNegotiable" checked class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500" />
+                <span>Open to Swap / Negotiable</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Campus Meetup Spot & Visual Icon Selector -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Campus Meetup Spot *</label>
+              <select
+                id="postMeetupSpot"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+              >
+                <option value="Library Courtyard">Library Courtyard</option>
+                <option value="IUB Food Court">IUB Food Court</option>
+                <option value="Main Gate (Plot 16)">Main Gate (Plot 16)</option>
+                <option value="Engineering & Lab Lobby">Engineering &amp; Lab Lobby</option>
+                <option value="Gym / Auditorium Lobby">Gym / Auditorium Lobby</option>
+                <option value="Bashundhara Gate">Bashundhara Gate</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Item Icon Badge</label>
+              <div class="flex items-center gap-1.5" id="emojiPicker">
+                <button type="button" onclick="selectPostEmoji(this, '📘')" class="emoji-btn w-9 h-9 rounded-xl border-2 border-teal-500 bg-teal-50 text-lg flex items-center justify-center">📘</button>
+                <button type="button" onclick="selectPostEmoji(this, '🧮')" class="emoji-btn w-9 h-9 rounded-xl border border-slate-200 hover:bg-slate-50 text-lg flex items-center justify-center">🧮</button>
+                <button type="button" onclick="selectPostEmoji(this, '🔌')" class="emoji-btn w-9 h-9 rounded-xl border border-slate-200 hover:bg-slate-50 text-lg flex items-center justify-center">🔌</button>
+                <button type="button" onclick="selectPostEmoji(this, '🥼')" class="emoji-btn w-9 h-9 rounded-xl border border-slate-200 hover:bg-slate-50 text-lg flex items-center justify-center">🥼</button>
+                <button type="button" onclick="selectPostEmoji(this, '💻')" class="emoji-btn w-9 h-9 rounded-xl border border-slate-200 hover:bg-slate-50 text-lg flex items-center justify-center">💻</button>
+                <button type="button" onclick="selectPostEmoji(this, '🔬')" class="emoji-btn w-9 h-9 rounded-xl border border-slate-200 hover:bg-slate-50 text-lg flex items-center justify-center">🔬</button>
+              </div>
+              <input type="hidden" id="postEmoji" value="📘" />
+            </div>
+          </div>
+
+          <!-- Optional Image URL -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Custom Image URL (Optional)</label>
+            <input
+              type="url"
+              id="postImageUrl"
+              placeholder="https://... (Leave blank to use clean campus card illustration)"
+              class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+            />
+          </div>
+
+          <!-- Seller Details -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-[#0B2545] uppercase tracking-wider">Your IUB Student Profile</span>
+              <span class="text-[11px] font-medium text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">@iub.edu.bd verified</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div>
+                <input
+                  type="text"
+                  id="postSellerName"
+                  required
+                  placeholder="Your Name (e.g., Rafid Hasan)"
+                  class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 outline-none"
+                />
+              </div>
+              <div>
+                <select
+                  id="postSellerDept"
+                  class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 outline-none"
+                >
+                  <option value="CSE">Dept: CSE</option>
+                  <option value="EEE">Dept: EEE</option>
+                  <option value="BBA">Dept: BBA</option>
+                  <option value="Pharmacy">Dept: Pharmacy</option>
+                  <option value="Media & Comm">Dept: Media &amp; Comm</option>
+                  <option value="Env. Science">Dept: Env. Science</option>
+                  <option value="English">Dept: English</option>
+                </select>
+              </div>
+              <div>
+                <input
+                  type="text"
+                  id="postSellerBatch"
+                  required
+                  placeholder="ID Prefix (e.g., 221xxxx)"
+                  value="221xxxx"
+                  class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Description &amp; Notes *</label>
+            <textarea
+              id="postDescription"
+              rows="3"
+              required
+              placeholder="Mention edition, highlights/markings, included cables or accessories, and preferred time between classes..."
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none resize-none"
+            ></textarea>
+          </div>
+
+          <!-- Submit Actions -->
+          <div class="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+            <button
+              type="button"
+              onclick="closePostModal()"
+              class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold text-sm transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#0B2545] to-teal-700 hover:from-[#134074] hover:to-teal-600 text-white font-semibold text-sm shadow-md transition active:scale-95"
+            >
+              Publish to IUB Mart
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
+
+  <!-- ===================================================================== -->
+  <!-- APPLICATION JAVASCRIPT                                                -->
+  <!-- ===================================================================== -->
+  <script>
+    // Storage Keys
+    const STORAGE_KEYS = {
+      WISHLIST: 'iub_mart_wishlist_v1',
+      CUSTOM_LISTINGS: 'iub_mart_custom_listings_v1'
+    };
+
+    // Categories & Conditions Configuration
+    const CATEGORIES = [
+      { id: 'All', label: 'All Items', icon: '🏫' },
+      { id: 'Textbooks', label: 'Textbooks', icon: '📚' },
+      { id: 'Electronics', label: 'Electronics', icon: '⚡' },
+      { id: 'Lab Kits', label: 'Lab Kits', icon: '🔬' },
+      { id: 'Calculators & Gear', label: 'Calculators & Gear', icon: '🧮' }
+    ];
+
+    const CONDITIONS = ['Like New', 'Good', 'Fair', 'Heavily Used'];
+
+    // Pre-populated realistic IUB Campus Catalog (14 items)
+    const INITIAL_CATALOG = [
+      {
+        id: 'iub-101',
+        title: 'Discrete Mathematics and Its Applications (8th Ed.)',
+        courseCode: 'CSE203',
+        category: 'Textbooks',
+        listingType: 'Buy',
+        price: 550,
+        rentPeriod: '',
+        negotiable: true,
+        condition: 'Like New',
+        meetupSpot: 'Library Courtyard',
+        emoji: '📘',
+        gradient: 'from-blue-50 to-indigo-100',
+        seller: { name: 'Tahmidul Islam', dept: 'CSE', batch: '213xxxx', verified: true },
+        description: 'Kenneth H. Rosen 8th Edition crisp print copy. Used for one semester in CSE203. Zero torn pages, clean cover, includes my handwritten formula summary sheet.',
+        createdAt: 1732180000000
+      },
+      {
+        id: 'iub-102',
+        title: 'Casio fx-991EX ClassWiz Scientific Calculator (Original)',
+        courseCode: 'MAT104',
+        category: 'Calculators & Gear',
+        listingType: 'Rent',
+        price: 250,
+        rentPeriod: '/ semester',
+        negotiable: false,
+        condition: 'Like New',
+        meetupSpot: 'IUB Food Court',
+        emoji: '🧮',
+        gradient: 'from-teal-50 to-emerald-100',
+        seller: { name: 'Nusrat Jahan', dept: 'EEE', batch: '202xxxx', verified: true },
+        description: '100% genuine Casio fx-991EX with QR hologram verified. Perfect for Calculus, Linear Algebra, and Circuits exams. Renting out for the full semester!',
+        createdAt: 1732175000000
+      },
+      {
+        id: 'iub-103',
+        title: 'Arduino Uno R3 Complete EEE/CSE Starter Kit',
+        courseCode: 'EEE211',
+        category: 'Lab Kits',
+        listingType: 'Buy',
+        price: 1650,
+        rentPeriod: '',
+        negotiable: true,
+        condition: 'Good',
+        meetupSpot: 'Engineering & Lab Lobby',
+        emoji: '🔌',
+        gradient: 'from-cyan-50 to-sky-100',
+        seller: { name: 'Samiul Karim', dept: 'EEE', batch: '211xxxx', verified: true },
+        description: 'Includes Arduino Uno R3 board, USB cable, 830-point breadboard, ultrasonic sensor, servo motor, LCD1602 display, resistors, LEDs, and 60 jumper wires in organizer box.',
+        createdAt: 1732170000000
+      },
+      {
+        id: 'iub-104',
+        title: 'Principles of Economics — N. Gregory Mankiw (9th Ed.)',
+        courseCode: 'ECN201',
+        category: 'Textbooks',
+        listingType: 'Buy',
+        price: 420,
+        rentPeriod: '',
+        negotiable: true,
+        condition: 'Good',
+        meetupSpot: 'Main Gate (Plot 16)',
+        emoji: '📊',
+        gradient: 'from-amber-50 to-orange-100',
+        seller: { name: 'Maliha Chowdhury', dept: 'BBA', batch: '222xxxx', verified: true },
+        description: 'Essential textbook for ECN201 & ECN202 at School of Business. Light pencil notes on supply/demand chapters, very neat binding.',
+        createdAt: 1732165000000
+      },
+      {
+        id: 'iub-105',
+        title: 'Pharmacy & Chemistry White Lab Coat (Size L - Cotton)',
+        courseCode: 'PHR102',
+        category: 'Lab Kits',
+        listingType: 'Rent',
+        price: 150,
+        rentPeriod: '/ semester',
+        negotiable: false,
+        condition: 'Like New',
+        meetupSpot: 'Engineering & Lab Lobby',
+        emoji: '🥼',
+        gradient: 'from-emerald-50 to-teal-100',
+        seller: { name: 'Farhana Yasmin', dept: 'Pharmacy', batch: '212xxxx', verified: true },
+        description: 'Freshly laundered, thick breathable cotton lab coat with front pockets. Required for Pharmacy and Environmental Science wet labs.',
+        createdAt: 1732160000000
+      },
+      {
+        id: 'iub-106',
+        title: 'Digital Logic Design Lab Kit (Breadboard + 12 Logic ICs)',
+        courseCode: 'CSE211',
+        category: 'Lab Kits',
+        listingType: 'Buy',
+        price: 780,
+        rentPeriod: '',
+        negotiable: true,
+        condition: 'Good',
+        meetupSpot: 'Library Courtyard',
+        emoji: '🧩',
+        gradient: 'from-indigo-50 to-purple-100',
+        seller: { name: 'Arafat Hossain', dept: 'CSE', batch: '221xxxx', verified: true },
+        description: 'Everything needed for CSE211 DLD lab: Dual breadboard, 7400/7402/7404/7408/7432/7486 gates, 7447 decoder, 7-segment display, DIP switches, and solid-core jumper wires.',
+        createdAt: 1732155000000
+      },
+      {
+        id: 'iub-107',
+        title: 'Wacom One CTL-472 Drawing & Note-Taking Pen Tablet',
+        courseCode: 'MCN204',
+        category: 'Electronics',
+        listingType: 'Buy',
+        price: 3400,
+        rentPeriod: '',
+        negotiable: true,
+        condition: 'Like New',
+        meetupSpot: 'IUB Food Court',
+        emoji: '🖊️',
+        gradient: 'from-rose-50 to-pink-100',
+        seller: { name: 'Zara Rahman', dept: 'Media & Comm', batch: '213xxxx', verified: true },
+        description: 'Comes with original box, battery-free pen, 3 extra nibs, and braided USB cable. Great for Media & Comm digital illustration or solving math assignments on OneNote.',
+        createdAt: 1732150000000
+      },
+      {
+        id: 'iub-108',
+        title: 'Organic Chemistry (8th Ed.) — Paula Yurkanis Bruice',
+        courseCode: 'CHE201',
+        category: 'Textbooks',
+        listingType: 'Buy',
+        price: 480,
+        rentPeriod: '',
+        negotiable: false,
+        condition: 'Fair',
+        meetupSpot: 'Bashundhara Gate',
+        emoji: '🧪',
+        gradient: 'from-lime-50 to-emerald-100',
+        seller: { name: 'Rashedul Alam', dept: 'Pharmacy', batch: '203xxxx', verified: true },
+        description: 'Covers reaction mechanisms in detail. Cover edges show minor backpack wear, hence the low price, but all pages and reaction charts are completely intact.',
+        createdAt: 1732145000000
+      },
+      {
+        id: 'iub-109',
+        title: 'Digital Multimeter UNI-T UT33D+ with Test Probes',
+        courseCode: 'EEE131',
+        category: 'Calculators & Gear',
+        listingType: 'Rent',
+        price: 120,
+        rentPeriod: '/ month',
+        negotiable: false,
+        condition: 'Good',
+        meetupSpot: 'Engineering & Lab Lobby',
+        emoji: '📟',
+        gradient: 'from-yellow-50 to-amber-100',
+        seller: { name: 'Tanvir Ahmed', dept: 'EEE', batch: '212xxxx', verified: true },
+        description: 'Reliable UNI-T multimeter with backlight, continuity buzzer, and fresh 9V battery. Ideal for circuit debugging and senior design projects.',
+        createdAt: 1732140000000
+      },
+      {
+        id: 'iub-110',
+        title: 'Raspberry Pi 4 Model B (4GB RAM) + Case & Power Supply',
+        courseCode: 'CSE425',
+        category: 'Electronics',
+        listingType: 'Rent',
+        price: 900,
+        rentPeriod: '/ semester',
+        negotiable: true,
+        condition: 'Like New',
+        meetupSpot: 'Library Courtyard',
+        emoji: '🍓',
+        gradient: 'from-red-50 to-rose-100',
+        seller: { name: 'Mashrur Rahman', dept: 'CSE', batch: '201xxxx', verified: true },
+        description: 'Renting out my Pi 4 (4GB) for your IoT / Embedded Systems capstone project. Includes official USB-C adapter, heatsink armor case, and 32GB MicroSD card.',
+        createdAt: 1732135000000
+      },
+      {
+        id: 'iub-111',
+        title: 'Digital Design (6th Ed.) — M. Morris Mano & Ciletti',
+        courseCode: 'CSE211',
+        category: 'Textbooks',
+        listingType: 'Buy',
+        price: 390,
+        rentPeriod: '',
+        negotiable: true,
+        condition: 'Good',
+        meetupSpot: 'Gym / Auditorium Lobby',
+        emoji: '📗',
+        gradient: 'from-sky-50 to-blue-100',
+        seller: { name: 'Sadman Sakib', dept: 'CSE', batch: '223xxxx', verified: true },
+        description: 'Standard textbook for Digital Logic Design. Includes Verilog HDL chapters and solved K-map examples.',
+        createdAt: 1732130000000
+      },
+      {
+        id: 'iub-112',
+        title: 'TP-Link Archer C6 AC1200 Dual Band Gigabit Wi-Fi Router',
+        courseCode: '',
+        category: 'Electronics',
+        listingType: 'Buy',
+        price: 1850,
+        rentPeriod: '',
+        negotiable: true,
+        condition: 'Good',
+        meetupSpot: 'Bashundhara Gate',
+        emoji: '📡',
+        gradient: 'from-cyan-50 to-teal-100',
+        seller: { name: 'Nayeem Uddin', dept: 'BBA', batch: '211xxxx', verified: true },
+        description: 'Moving out of Bashundhara mess after graduation. Works flawlessly on 5GHz band, 4 antennas, includes power adapter and Ethernet patch cord.',
+        createdAt: 1732125000000
+      },
+      {
+        id: 'iub-113',
+        title: 'Borosilicate Glassware & Titration Burette Practice Set',
+        courseCode: 'ENV103',
+        category: 'Lab Kits',
+        listingType: 'Buy',
+        price: 650,
+        rentPeriod: '',
+        negotiable: false,
+        condition: 'Like New',
+        meetupSpot: 'Engineering & Lab Lobby',
+        emoji: '⚗️',
+        gradient: 'from-violet-50 to-indigo-100',
+        seller: { name: 'Anika Tabassum', dept: 'Env. Science', batch: '213xxxx', verified: true },
+        description: 'Includes 2x 250ml conical flasks, 100ml measuring cylinder, glass stirring rod, and pipette bulb. Zero chips or cracks.',
+        createdAt: 1732120000000
+      },
+      {
+        id: 'iub-114',
+        title: 'Calculus: Early Transcendentals (8th Ed.) — James Stewart',
+        courseCode: 'MAT104',
+        category: 'Textbooks',
+        listingType: 'Buy',
+        price: 320,
+        rentPeriod: '',
+        negotiable: true,
+        condition: 'Heavily Used',
+        meetupSpot: 'Main Gate (Plot 16)',
+        emoji: '📐',
+        gradient: 'from-slate-100 to-slate-200',
+        seller: { name: 'Hasibul Hasan', dept: 'CSE', batch: '202xxxx', verified: true },
+        description: 'Passed down through two IUB batches! Taped spine and highlighted theorems for MAT104/MAT201, super budget-friendly study copy.',
+        createdAt: 1732115000000
+      }
+    ];
+
+    // Application State
+    let state = {
+      listings: [],
+      wishlist: [],
+      selectedCategory: 'All',
+      selectedListingType: 'All',
+      selectedConditions: [],
+      searchQuery: '',
+      sortBy: 'newest',
+      requestedItems: {} // Tracks sent meetup requests during session
+    };
+
+    // =========================================================================
+    // INITIALIZATION & LOCALSTORAGE PERSISTENCE
+    // =========================================================================
+    function initApp() {
+      // Load saved wishlist
+      try {
+        const savedWishlist = JSON.parse(localStorage.getItem(STORAGE_KEYS.WISHLIST));
+        state.wishlist = Array.isArray(savedWishlist) ? savedWishlist : [];
+      } catch (e) {
+        state.wishlist = [];
+      }
+
+      // Load custom user-posted listings & merge with initial catalog
+      let customListings = [];
+      try {
+        const savedCustom = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_LISTINGS));
+        customListings = Array.isArray(savedCustom) ? savedCustom : [];
+      } catch (e) {
+        customListings = [];
+      }
+
+      state.listings = [...customListings, ...INITIAL_CATALOG];
+
+      renderCategoryTabs();
+      renderConditionFilters();
+      updateWishlistBadge();
+      renderMarketplace();
+    }
+
+    function saveWishlistToStorage() {
+      localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(state.wishlist));
+      updateWishlistBadge();
+    }
+
+    function saveCustomListingToStorage(newListing) {
+      let existingCustom = [];
+      try {
+        existingCustom = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_LISTINGS)) || [];
+      } catch (e) {
+        existingCustom = [];
+      }
+      existingCustom.unshift(newListing);
+      localStorage.setItem(STORAGE_KEYS.CUSTOM_LISTINGS, JSON.stringify(existingCustom));
+    }
+
+    function resetDemoData() {
+      localStorage.removeItem(STORAGE_KEYS.CUSTOM_LISTINGS);
+      localStorage.removeItem(STORAGE_KEYS.WISHLIST);
+      state.wishlist = [];
+      state.listings = [...INITIAL_CATALOG];
+      resetAllFilters();
+      updateWishlistBadge();
+      showToast('Demo catalog & wishlist restored to default.', 'info');
+    }
+
+    // =========================================================================
+    // FILTERING, SEARCHING & SORTING LOGIC
+    // =========================================================================
+    function getFilteredListings() {
+      const query = state.searchQuery.trim().toLowerCase();
+
+      let filtered = state.listings.filter(item => {
+        // Category filter
+        if (state.selectedCategory !== 'All' && item.category !== state.selectedCategory) {
+          return false;
+        }
+
+        // Listing type filter
+        if (state.selectedListingType !== 'All' && item.listingType !== state.selectedListingType) {
+          return false;
+        }
+
+        // Condition filter (if any condition pills are checked)
+        if (state.selectedConditions.length > 0 && !state.selectedConditions.includes(item.condition)) {
+          return false;
+        }
+
+        // Real-time search across title, course code, description, seller, and meetup spot
+        if (query) {
+          const searchableText = [
+            item.title,
+            item.courseCode || '',
+            item.category,
+            item.description,
+            item.meetupSpot,
+            item.seller.name,
+            item.seller.dept
+          ].join(' ').toLowerCase();
+
+          if (!searchableText.includes(query)) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      // Sorting
+      filtered.sort((a, b) => {
+        if (state.sortBy === 'price-asc') {
+          return a.price - b.price;
+        } else if (state.sortBy === 'price-desc') {
+          return b.price - a.price;
+        } else {
+          return b.createdAt - a.createdAt;
+        }
+      });
+
+      return filtered;
+    }
+
+    function setCategoryFilter(categoryId) {
+      state.selectedCategory = categoryId;
+      renderCategoryTabs();
+      renderMarketplace();
+    }
+
+    function setListingTypeFilter(type) {
+      state.selectedListingType = type;
+      document.querySelectorAll('.type-pill').forEach(btn => {
+        const isActive = btn.dataset.type === type;
+        if (isActive) {
+          btn.className = 'type-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-white text-[#0B2545] shadow-xs';
+        } else {
+          btn.className = 'type-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900';
+        }
+      });
+      renderMarketplace();
+    }
+
+    function toggleConditionFilter(condition) {
+      const idx = state.selectedConditions.indexOf(condition);
+      if (idx > -1) {
+        state.selectedConditions.splice(idx, 1);
+      } else {
+        state.selectedConditions.push(condition);
+      }
+      renderConditionFilters();
+      renderMarketplace();
+    }
+
+    function handleSearchInput(val) {
+      state.searchQuery = val;
+      // Sync desktop & mobile search inputs
+      const desktopInput = document.getElementById('desktopSearchInput');
+      const mobileInput = document.getElementById('mobileSearchInput');
+      if (desktopInput && desktopInput.value !== val) desktopInput.value = val;
+      if (mobileInput && mobileInput.value !== val) mobileInput.value = val;
+
+      // Toggle clear buttons
+      const hasText = val.trim().length > 0;
+      document.getElementById('clearSearchBtnDesktop')?.classList.toggle('hidden', !hasText);
+      document.getElementById('clearSearchBtnMobile')?.classList.toggle('hidden', !hasText);
+
+      renderMarketplace();
+    }
+
+    function clearSearch() {
+      handleSearchInput('');
+    }
+
+    function setSortOrder(sortVal) {
+      state.sortBy = sortVal;
+      renderMarketplace();
+    }
+
+    function resetAllFilters(event) {
+      if (event) event.preventDefault();
+      state.selectedCategory = 'All';
+      state.selectedListingType = 'All';
+      state.selectedConditions = [];
+      state.searchQuery = '';
+      state.sortBy = 'newest';
+
+      document.getElementById('desktopSearchInput').value = '';
+      document.getElementById('mobileSearchInput').value = '';
+      document.getElementById('clearSearchBtnDesktop').classList.add('hidden');
+      document.getElementById('clearSearchBtnMobile').classList.add('hidden');
+      document.getElementById('sortSelect').value = 'newest';
+
+      setListingTypeFilter('All');
+      renderCategoryTabs();
+      renderConditionFilters();
+      renderMarketplace();
+    }
+
+    // =========================================================================
+    // UI RENDERING: TABS, FILTERS & CARDS
+    // =========================================================================
+    function renderCategoryTabs() {
+      const container = document.getElementById('categoryTabs');
+      container.innerHTML = CATEGORIES.map(cat => {
+        const isSelected = state.selectedCategory === cat.id;
+        const count = cat.id === 'All'
+          ? state.listings.length
+          : state.listings.filter(i => i.category === cat.id).length;
+
+        return `
+          <button
+            onclick="setCategoryFilter('${cat.id}')"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
+              isSelected
+                ? 'bg-[#0B2545] text-white shadow-sm'
+                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+            }"
+          >
+            <span>${cat.icon}</span>
+            <span>${cat.label}</span>
+            <span class="text-xs px-1.5 py-0.5 rounded-full ${
+              isSelected ? 'bg-white/20 text-teal-200' : 'bg-slate-100 text-slate-500'
+            }">${count}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderConditionFilters() {
+      const container = document.getElementById('conditionFilters');
+      container.innerHTML = CONDITIONS.map(cond => {
+        const isChecked = state.selectedConditions.includes(cond);
+        return `
+          <button
+            onclick="toggleConditionFilter('${cond}')"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition ${
+              isChecked
+                ? 'bg-teal-50 border-teal-500 text-teal-800 shadow-2xs'
+                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+            }"
+          >
+            <span class="w-3.5 h-3.5 rounded flex items-center justify-center border ${
+              isChecked ? 'bg-teal-600 border-teal-600 text-white' : 'border-slate-300 bg-white'
+            }">
+              ${isChecked ? '<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : ''}
+            </span>
+            <span>${cond}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function getConditionBadgeClasses(condition) {
+      switch (condition) {
+        case 'Like New':
+          return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        case 'Good':
+          return 'bg-blue-50 text-blue-700 border-blue-200';
+        case 'Fair':
+          return 'bg-amber-50 text-amber-700 border-amber-200';
+        case 'Heavily Used':
+          return 'bg-orange-50 text-orange-700 border-orange-200';
+        default:
+          return 'bg-slate-100 text-slate-700 border-slate-200';
+      }
+    }
+
+    function updateActiveFilterSummary() {
+      const wrapper = document.getElementById('activeFilterSummary');
+      const chipsContainer = document.getElementById('activeFilterChips');
+      const chips = [];
+
+      if (state.selectedCategory !== 'All') {
+        chips.push(`Category: <strong>${state.selectedCategory}</strong>`);
+      }
+      if (state.selectedListingType !== 'All') {
+        chips.push(`Type: <strong>${state.selectedListingType === 'Buy' ? 'For Sale' : 'For Rent'}</strong>`);
+      }
+      if (state.selectedConditions.length > 0) {
+        chips.push(`Condition: <strong>${state.selectedConditions.join(', ')}</strong>`);
+      }
+      if (state.searchQuery.trim()) {
+        chips.push(`Search: <strong>"${escapeHtml(state.searchQuery.trim())}"</strong>`);
+      }
+
+      if (chips.length === 0) {
+        wrapper.classList.add('hidden');
+      } else {
+        wrapper.classList.remove('hidden');
+        chipsContainer.innerHTML = chips.map(c => `
+          <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200">${c}</span>
+        `).join('');
+      }
+    }
+
+    function renderMarketplace() {
+      const grid = document.getElementById('productGrid');
+      const emptyState = document.getElementById('emptyState');
+      const countLabel = document.getElementById('resultsCountLabel');
+      const statTotal = document.getElementById('statTotalItems');
+
+      if (statTotal) statTotal.textContent = state.listings.length;
+      updateActiveFilterSummary();
+
+      const items = getFilteredListings();
+      countLabel.innerHTML = `Showing <strong class="text-slate-800">${items.length}</strong> ${items.length === 1 ? 'item' : 'items'}`;
+
+      if (items.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      grid.innerHTML = items.map(item => {
+        const isSaved = state.wishlist.includes(item.id);
+        const isRent = item.listingType === 'Rent';
+        const condClasses = getConditionBadgeClasses(item.condition);
+
+        return `
+          <article class="group bg-white rounded-2xl border border-slate-200/90 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 flex flex-col overflow-hidden">
+            
+            <!-- Card Visual Header -->
+            <div onclick="openDetailModal('${item.id}')" class="relative h-44 bg-gradient-to-br ${item.gradient || 'from-slate-100 to-blue-50'} flex items-center justify-center cursor-pointer overflow-hidden">
+              ${
+                item.imageUrl
+                  ? `<img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                     <div class="hidden w-full h-full items-center justify-center text-6xl select-none">${item.emoji || '📦'}</div>`
+                  : `<div class="text-6xl group-hover:scale-110 transition-transform duration-300 select-none drop-shadow-xs">${item.emoji || '📦'}</div>`
+              }
+
+              <!-- Top Left Badges: Buy vs Rent + Course Code -->
+              <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">
+                <span class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wider shadow-xs ${
+                  isRent
+                    ? 'bg-teal-600 text-white'
+                    : 'bg-[#0B2545] text-white'
+                }">
+                  ${isRent ? 'For Rent' : 'For Sale'}
+                </span>
+                ${
+                  item.courseCode
+                    ? `<span class="px-2 py-1 rounded-lg text-[11px] font-bold bg-white/95 text-[#134074] border border-slate-200/80 shadow-2xs">${escapeHtml(item.courseCode)}</span>`
+                    : ''
+                }
+              </div>
+
+              <!-- Top Right Wishlist Toggle -->
+              <button
+                onclick="toggleWishlist(event, '${item.id}')"
+                aria-label="${isSaved ? 'Remove from wishlist' : 'Save to wishlist'}"
+                class="absolute top-3 right-3 w-9 h-9 rounded-xl bg-white/95 hover:bg-white shadow-sm border border-slate-200/70 flex items-center justify-center transition active:scale-90"
+              >
+                <svg class="w-5 h-5 transition-colors ${isSaved ? 'text-rose-500 fill-rose-500 animate-heart' : 'text-slate-400 hover:text-rose-500'}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+              </button>
+
+              <!-- Bottom Left Condition Pill -->
+              <div class="absolute bottom-3 left-3 flex items-center gap-1.5">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${condClasses} shadow-2xs">
+                  ${item.condition}
+                </span>
+                ${
+                  item.negotiable
+                    ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white/90 text-slate-700 border border-slate-200/80">Swap / Nego</span>`
+                    : ''
+                }
+              </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="p-4 flex-1 flex flex-col">
+              <!-- Category label -->
+              <div class="text-[11px] font-semibold text-teal-700 uppercase tracking-wider mb-1">
+                ${item.category}
+              </div>
+
+              <!-- Item Title -->
+              <h3
+                onclick="openDetailModal('${item.id}')"
+                class="text-base font-bold text-slate-900 group-hover:text-[#134074] leading-snug line-clamp-2 cursor-pointer transition"
+              >
+                ${escapeHtml(item.title)}
+              </h3>
+
+              <!-- Campus Meetup Spot -->
+              <div class="mt-2.5 flex items-center gap-1.5 text-xs text-slate-500">
+                <svg class="w-3.5 h-3.5 text-teal-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span class="truncate font-medium text-slate-600">${escapeHtml(item.meetupSpot)}</span>
+              </div>
+
+              <!-- Price Row -->
+              <div class="mt-3 pt-3 border-t border-slate-100 flex items-baseline justify-between">
+                <div>
+                  <span class="text-lg font-extrabold text-[#0B2545]">৳${item.price.toLocaleString()}</span>
+                  ${item.rentPeriod ? `<span class="text-xs font-semibold text-teal-700 ml-0.5">${escapeHtml(item.rentPeriod)}</span>` : ''}
+                </div>
+                <button
+                  onclick="openDetailModal('${item.id}')"
+                  class="text-xs font-bold text-[#134074] hover:text-teal-700 inline-flex items-center gap-1 transition"
+                >
+                  <span>Details</span>
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Seller Footer -->
+              <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <div class="w-7 h-7 rounded-full bg-gradient-to-br from-[#0B2545] to-teal-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                    ${getInitials(item.seller.name)}
+                  </div>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-1">
+                      <span class="text-xs font-semibold text-slate-800 truncate">${escapeHtml(item.seller.name)}</span>
+                      <svg class="w-3.5 h-3.5 text-teal-600 shrink-0" title="Verified @iub.edu.bd student" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <p class="text-[11px] text-slate-400 truncate">${escapeHtml(item.seller.dept)} • ${escapeHtml(item.seller.batch)}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </article>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // WISHLIST LOGIC & SLIDE-OVER DRAWER
+    // =========================================================================
+    function toggleWishlist(event, itemId) {
+      if (event) event.stopPropagation();
+      const index = state.wishlist.indexOf(itemId);
+      const item = state.listings.find(i => i.id === itemId);
+
+      if (index > -1) {
+        state.wishlist.splice(index, 1);
+        showToast(`Removed "${item ? item.title : 'item'}" from wishlist.`, 'info');
+      } else {
+        state.wishlist.push(itemId);
+        showToast(`Saved "${item ? item.title : 'item'}" to your wishlist!`, 'success');
+      }
+
+      saveWishlistToStorage();
+      renderMarketplace();
+      renderWishlistDrawer();
+
+      // If detail modal is currently open for this item, refresh its heart button
+      const openModalBtn = document.getElementById(`modalHeartBtn-${itemId}`);
+      if (openModalBtn) {
+        openDetailModal(itemId);
+      }
+    }
+
+    function updateWishlistBadge() {
+      const badge = document.getElementById('wishlistBadge');
+      if (badge) {
+        badge.textContent = state.wishlist.length;
+      }
+    }
+
+    function toggleWishlistDrawer(open) {
+      const backdrop = document.getElementById('wishlistBackdrop');
+      if (open) {
+        renderWishlistDrawer();
+        backdrop.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      } else {
+        backdrop.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    }
+
+    function renderWishlistDrawer() {
+      const container = document.getElementById('wishlistItemsContainer');
+      const subtitle = document.getElementById('drawerCountSubtitle');
+      const totalEl = document.getElementById('wishlistTotalCost');
+      const footer = document.getElementById('wishlistFooter');
+
+      const savedItems = state.wishlist
+        .map(id => state.listings.find(item => item.id === id))
+        .filter(Boolean);
+
+      subtitle.textContent = `${savedItems.length} ${savedItems.length === 1 ? 'item' : 'items'} saved in localStorage`;
+
+      if (savedItems.length === 0) {
+        footer.classList.add('hidden');
+        container.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center py-12 px-4">
+            <div class="w-16 h-16 rounded-2xl bg-rose-50 text-rose-400 flex items-center justify-center text-3xl mb-3">
+              🤍
+            </div>
+            <h3 class="text-base font-bold text-slate-800">Your wishlist is empty</h3>
+            <p class="text-xs text-slate-500 mt-1 max-w-xs">
+              Tap the heart icon on any textbook, calculator, or lab kit to save it here for your next campus meetup.
+            </p>
+            <button
+              onclick="toggleWishlistDrawer(false)"
+              class="mt-4 px-4 py-2 rounded-xl bg-[#0B2545] text-white text-xs font-semibold hover:bg-[#134074] transition"
+            >
+              Explore Campus Listings
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      footer.classList.remove('hidden');
+
+      const totalCost = savedItems.reduce((sum, item) => sum + item.price, 0);
+      totalEl.textContent = `৳${totalCost.toLocaleString()}`;
+
+      container.innerHTML = savedItems.map(item => `
+        <div class="bg-white rounded-2xl border border-slate-200/90 p-3 flex items-center gap-3 shadow-2xs">
+          <div
+            onclick="toggleWishlistDrawer(false); openDetailModal('${item.id}')"
+            class="w-14 h-14 rounded-xl bg-gradient-to-br ${item.gradient || 'from-slate-100 to-blue-50'} flex items-center justify-center text-2xl shrink-0 cursor-pointer"
+          >
+            ${item.emoji || '📦'}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                item.listingType === 'Rent' ? 'bg-teal-50 text-teal-700' : 'bg-blue-50 text-[#134074]'
+              }">${item.listingType}</span>
+              ${item.courseCode ? `<span class="text-[10px] font-semibold text-slate-500">${escapeHtml(item.courseCode)}</span>` : ''}
+            </div>
+            <h4
+              onclick="toggleWishlistDrawer(false); openDetailModal('${item.id}')"
+              class="text-xs sm:text-sm font-bold text-slate-800 truncate mt-0.5 cursor-pointer hover:text-teal-700"
+            >
+              ${escapeHtml(item.title)}
+            </h4>
+            <div class="flex items-center justify-between mt-1">
+              <span class="text-sm font-extrabold text-[#0B2545]">
+                ৳${item.price.toLocaleString()}
+                <span class="text-[11px] font-medium text-teal-700">${item.rentPeriod || ''}</span>
+              </span>
+              <span class="text-[11px] text-slate-400 truncate max-w-[120px]">📍 ${escapeHtml(item.meetupSpot)}</span>
+            </div>
+          </div>
+          <button
+            onclick="toggleWishlist(event, '${item.id}')"
+            class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition shrink-0"
+            title="Remove from wishlist"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function clearWishlist() {
+      if (state.wishlist.length === 0) return;
+      state.wishlist = [];
+      saveWishlistToStorage();
+      renderMarketplace();
+      renderWishlistDrawer();
+      showToast('Wishlist cleared.', 'info');
+    }
+
+    // =========================================================================
+    // ITEM DETAILS & CAMPUS MEETUP REQUEST MODAL
+    // =========================================================================
+    function openDetailModal(itemId) {
+      const item = state.listings.find(i => i.id === itemId);
+      if (!item) return;
+
+      const isSaved = state.wishlist.includes(item.id);
+      const isRent = item.listingType === 'Rent';
+      const condClasses = getConditionBadgeClasses(item.condition);
+      const alreadyRequested = state.requestedItems[item.id];
+
+      const modalContent = document.getElementById('detailModalContent');
+      modalContent.innerHTML = `
+        <!-- Top Visual Banner -->
+        <div class="relative h-48 sm:h-56 bg-gradient-to-br ${item.gradient || 'from-slate-100 to-blue-100'} flex items-center justify-center">
+          ${
+            item.imageUrl
+              ? `<img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover" />
+                 <div class="hidden w-full h-full items-center justify-center text-7xl">${item.emoji || '📦'}</div>`
+              : `<div class="text-7xl select-none drop-shadow-sm">${item.emoji || '📦'}</div>`
+          }
+
+          <!-- Close Button -->
+          <button
+            onclick="closeDetailModal()"
+            class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-white/95 hover:bg-white text-slate-700 shadow-md flex items-center justify-center transition"
+            aria-label="Close modal"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+
+          <!-- Badges -->
+          <div class="absolute bottom-4 left-5 flex flex-wrap items-center gap-2">
+            <span class="px-3 py-1 rounded-lg text-xs font-extrabold uppercase tracking-wider shadow-xs ${
+              isRent ? 'bg-teal-600 text-white' : 'bg-[#0B2545] text-white'
+            }">
+              ${isRent ? 'For Rent' : 'For Sale'}
+            </span>
+            <span class="px-3 py-1 rounded-lg text-xs font-bold border ${condClasses} shadow-2xs">
+              Condition: ${item.condition}
+            </span>
+            ${
+              item.courseCode
+                ? `<span class="px-3 py-1 rounded-lg text-xs font-bold bg-white text-[#134074] border border-slate-200 shadow-2xs">Course: ${escapeHtml(item.courseCode)}</span>`
+                : ''
+            }
+          </div>
+        </div>
+
+        <!-- Detail Content Body -->
+        <div class="p-5 sm:p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+          
+          <!-- Title, Price & Wishlist Action -->
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div>
+              <span class="text-xs font-bold text-teal-700 uppercase tracking-wider">${item.category}</span>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5 leading-snug">
+                ${escapeHtml(item.title)}
+              </h2>
+            </div>
+
+            <div class="flex items-center sm:flex-col sm:items-end justify-between gap-2 shrink-0">
+              <div class="text-left sm:text-right">
+                <div class="text-2xl font-extrabold text-[#0B2545]">
+                  ৳${item.price.toLocaleString()}<span class="text-sm font-semibold text-teal-700">${item.rentPeriod || ''}</span>
+                </div>
+                ${item.negotiable ? '<span class="text-[11px] font-semibold text-emerald-700">✓ Open to Swap / Negotiable</span>' : '<span class="text-[11px] text-slate-400">Fixed Campus Price</span>'}
+              </div>
+
+              <button
+                id="modalHeartBtn-${item.id}"
+                onclick="toggleWishlist(event, '${item.id}')"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition ${
+                  isSaved
+                    ? 'bg-rose-50 border-rose-200 text-rose-600'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                }"
+              >
+                <svg class="w-4 h-4 ${isSaved ? 'fill-rose-500 text-rose-500' : 'text-slate-500'}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+                <span>${isSaved ? 'Saved' : 'Save'}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/70">
+            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Seller Description</h4>
+            <p class="text-sm text-slate-700 leading-relaxed">${escapeHtml(item.description)}</p>
+          </div>
+
+          <!-- Seller Profile & Campus Pickup Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Seller Card -->
+            <div class="p-3.5 rounded-2xl border border-slate-200 flex items-center gap-3">
+              <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#0B2545] to-teal-600 text-white font-bold text-sm flex items-center justify-center shrink-0">
+                ${getInitials(item.seller.name)}
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1">
+                  <span class="text-sm font-bold text-slate-900 truncate">${escapeHtml(item.seller.name)}</span>
+                  <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-teal-50 text-teal-700 text-[10px] font-bold border border-teal-200">
+                    ✓ @iub.edu.bd
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">Department of <strong>${escapeHtml(item.seller.dept)}</strong> • ID ${escapeHtml(item.seller.batch)}</p>
+              </div>
+            </div>
+
+            <!-- Meetup Spot Card -->
+            <div class="p-3.5 rounded-2xl border border-teal-200/80 bg-teal-50/40 flex items-center gap-3">
+              <div class="w-11 h-11 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </div>
+              <div>
+                <span class="text-[11px] font-bold text-teal-800 uppercase tracking-wider">Preferred Campus Pickup</span>
+                <p class="text-sm font-bold text-slate-900">${escapeHtml(item.meetupSpot)}</p>
+                <p class="text-[11px] text-slate-500">IUB Bashundhara Campus</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Quick-Message / Campus Meetup Request Box -->
+          <div class="border-t border-slate-200 pt-4">
+            <h4 class="text-xs font-bold text-[#0B2545] uppercase tracking-wider mb-2">
+              Send Campus Meetup Request to ${escapeHtml(item.seller.name.split(' ')[0])}
+            </h4>
+
+            <!-- Quick Reply Chips -->
+            <div class="flex flex-wrap gap-1.5 mb-2.5">
+              <button
+                type="button"
+                onclick="fillQuickMessage('Hi ${escapeHtml(item.seller.name.split(' ')[0])}! Is this still available?')"
+                class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition"
+              >
+                "Is this still available?"
+              </button>
+              <button
+                type="button"
+                onclick="fillQuickMessage('Can we meet at ${escapeHtml(item.meetupSpot)} between classes today?')"
+                class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition"
+              >
+                "Can we meet at ${escapeHtml(item.meetupSpot)}?"
+              </button>
+              <button
+                type="button"
+                onclick="fillQuickMessage('Would you accept ৳${Math.max(50, Math.round(item.price * 0.85))} for a quick campus pickup?')"
+                class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition"
+              >
+                "Offer ৳${Math.max(50, Math.round(item.price * 0.85))}?"
+              </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                id="meetupMessageInput"
+                value="Hi ${escapeHtml(item.seller.name.split(' ')[0])}! I'm an IUB student interested in this. Can we meet at ${escapeHtml(item.meetupSpot)}?"
+                class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+              />
+              <button
+                type="button"
+                onclick="sendMeetupRequest('${item.id}')"
+                class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#0B2545] to-teal-700 hover:from-[#134074] hover:to-teal-600 text-white font-semibold text-sm shadow-sm transition shrink-0 active:scale-95"
+              >
+                Send Request
+              </button>
+            </div>
+
+            <!-- Simulated Confirmation Banner -->
+            <div id="meetupRequestConfirmation" class="${alreadyRequested ? '' : 'hidden'} mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span><strong>Meetup Request Sent!</strong> ${escapeHtml(item.seller.name)} (@iub.edu.bd) has been notified to coordinate at <strong>${escapeHtml(item.meetupSpot)}</strong>.</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('detailModalBackdrop').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detailModalBackdrop').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function fillQuickMessage(msg) {
+      const input = document.getElementById('meetupMessageInput');
+      if (input) {
+        input.value = msg;
+        input.focus();
+      }
+    }
+
+    function sendMeetupRequest(itemId) {
+      const input = document.getElementById('meetupMessageInput');
+      const item = state.listings.find(i => i.id === itemId);
+      if (!input || !input.value.trim()) {
+        showToast('Please enter a short message for the seller.', 'error');
+        return;
+      }
+      state.requestedItems[itemId] = true;
+      const confirmBanner = document.getElementById('meetupRequestConfirmation');
+      if (confirmBanner) confirmBanner.classList.remove('hidden');
+      showToast(`Campus meetup request sent to ${item.seller.name}!`, 'success');
+    }
+
+    // =========================================================================
+    // POST NEW ITEM MODAL & FORM SUBMISSION
+    // =========================================================================
+    function openPostModal() {
+      document.getElementById('postModalBackdrop').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePostModal() {
+      document.getElementById('postModalBackdrop').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function toggleRentPeriodField(listingType) {
+      const rentWrapper = document.getElementById('rentPeriodWrapper');
+      const negoWrapper = document.getElementById('negotiableWrapper');
+      if (listingType === 'Rent') {
+        rentWrapper.classList.remove('hidden');
+        negoWrapper.classList.add('hidden');
+      } else {
+        rentWrapper.classList.add('hidden');
+        negoWrapper.classList.remove('hidden');
+      }
+    }
+
+    function selectPostEmoji(btn, emoji) {
+      document.getElementById('postEmoji').value = emoji;
+      document.querySelectorAll('.emoji-btn').forEach(b => {
+        b.className = 'emoji-btn w-9 h-9 rounded-xl border border-slate-200 hover:bg-slate-50 text-lg flex items-center justify-center';
+      });
+      btn.className = 'emoji-btn w-9 h-9 rounded-xl border-2 border-teal-500 bg-teal-50 text-lg flex items-center justify-center';
+    }
+
+    function handleCreateListing(event) {
+      event.preventDefault();
+
+      const title = document.getElementById('postTitle').value.trim();
+      const courseCode = document.getElementById('postCourseCode').value.trim().toUpperCase();
+      const category = document.getElementById('postCategory').value;
+      const condition = document.getElementById('postCondition').value;
+      const listingType = document.getElementById('postListingType').value;
+      const price = parseInt(document.getElementById('postPrice').value, 10) || 100;
+      const rentPeriod = listingType === 'Rent' ? document.getElementById('postRentPeriod').value : '';
+      const negotiable = document.getElementById('postNegotiable').checked;
+      const meetupSpot = document.getElementById('postMeetupSpot').value;
+      const emoji = document.getElementById('postEmoji').value || '📘';
+      const imageUrl = document.getElementById('postImageUrl').value.trim();
+      const sellerName = document.getElementById('postSellerName').value.trim();
+      const sellerDept = document.getElementById('postSellerDept').value;
+      const sellerBatch = document.getElementById('postSellerBatch').value.trim() || '221xxxx';
+      const description = document.getElementById('postDescription').value.trim();
+
+      const gradients = [
+        'from-teal-50 to-cyan-100',
+        'from-blue-50 to-indigo-100',
+        'from-emerald-50 to-teal-100',
+        'from-amber-50 to-yellow-100'
+      ];
+
+      const newListing = {
+        id: 'iub-custom-' + Date.now(),
+        title,
+        courseCode,
+        category,
+        listingType,
+        price,
+        rentPeriod,
+        negotiable,
+        condition,
+        meetupSpot,
+        emoji,
+        imageUrl: imageUrl || '',
+        gradient: gradients[Math.floor(Math.random() * gradients.length)],
+        seller: {
+          name: sellerName,
+          dept: sellerDept,
+          batch: sellerBatch,
+          verified: true
+        },
+        description,
+        createdAt: Date.now()
+      };
+
+      // Prepend to state and save to localStorage
+      state.listings.unshift(newListing);
+      saveCustomListingToStorage(newListing);
+
+      // Reset form & close modal
+      document.getElementById('postItemForm').reset();
+      toggleRentPeriodField('Buy');
+      closePostModal();
+
+      // Re-render marketplace
+      renderCategoryTabs();
+      renderMarketplace();
+      showToast(`"${title}" is now live on IUB Mart!`, 'success');
+    }
+
+    // =========================================================================
+    // TOAST NOTIFICATIONS & UTILITIES
+    // =========================================================================
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+
+      const colors = {
+        success: 'bg-[#0B2545] text-white border-teal-500/40',
+        info: 'bg-slate-800 text-white border-slate-600',
+        error: 'bg-rose-700 text-white border-rose-400'
+      };
+
+      const icon = type === 'success' ? '✅' : type === 'error' ? '⚠️' : 'ℹ️';
+
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl border shadow-xl text-xs sm:text-sm font-medium transition-all duration-300 translate-y-2 opacity-0 ${colors[type] || colors.info}`;
+      toast.innerHTML = `<span>${icon}</span><span class="flex-1">${escapeHtml(message)}</span>`;
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    function getInitials(name) {
+      return name
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(n => n[0].toUpperCase())
+        .join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Close modals/drawers on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeDetailModal();
+        closePostModal();
+        toggleWishlistDrawer(false);
+      }
+    });
+
+    // Boot application
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
